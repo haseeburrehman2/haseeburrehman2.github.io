@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin Panel - Haseeb Ur Rehman</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0a0a0a">
+<link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%230a0a0a'/><text x='32' y='43' font-family='Georgia,serif' font-weight='700' font-size='30' text-anchor='middle' fill='%23FFD60A'>HR</text></svg>">
+<style>
+/* Single file admin panel. No external CSS, fonts or CDN. Data is saved in this browser (localStorage). */
+:root{--y:#FFD60A;--y2:#FFB703;--bg:#0a0a0a;--tx:#ffffff;--mut:#b5b5b5;--r:22px;--blur:12px;--font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{font-family:var(--font);background:var(--bg);color:var(--tx);line-height:1.6;overflow-x:hidden;min-height:100vh}
+a{color:inherit;text-decoration:none}
+ul{list-style:none}
+img{max-width:100%;display:block}
+button,input,select,textarea{font-family:inherit;font-size:1rem}
+.container{width:92%;max-width:1180px;margin:0 auto}
+.y{color:var(--y)}
+.grad-text{background:linear-gradient(135deg,var(--y),var(--y2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:var(--y)}
+.glass{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:var(--r);-webkit-backdrop-filter:blur(var(--blur));backdrop-filter:blur(var(--blur))}
+.glow-bg{position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(circle at 90% 0%,color-mix(in srgb,var(--y) 16%,transparent),transparent 45%),radial-gradient(circle at 0% 45%,color-mix(in srgb,var(--y2) 9%,transparent),transparent 45%)}
+body.noglow .glow-bg{display:none}
+.hide{display:none!important}
+
+/* Buttons */
+.btn{display:inline-block;padding:12px 26px;border-radius:50px;font-weight:700;border:0;cursor:pointer;text-align:center;transition:all .3s;color:var(--tx)}
+.btn-p{background:linear-gradient(135deg,var(--y),var(--y2));color:#0a0a0a;box-shadow:0 10px 28px color-mix(in srgb,var(--y) 28%,transparent)}
+.btn-p:hover{transform:translateY(-3px);box-shadow:0 16px 40px color-mix(in srgb,var(--y) 45%,transparent)}
+.btn-g{background:transparent;border:2px solid color-mix(in srgb,var(--y) 45%,transparent)}
+.btn-g:hover{border-color:var(--y);color:var(--y);transform:translateY(-2px)}
+.btn-d{background:rgba(255,69,58,.14);border:1px solid rgba(255,69,58,.5);color:#ff6b61;padding:8px 16px;font-size:.85rem}
+.btn-d:hover{background:rgba(255,69,58,.28)}
+.btn-s{padding:8px 16px;font-size:.85rem}
+
+/* Forms */
+label{display:block;font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;color:var(--y);margin:14px 0 6px}
+input[type=text],input[type=email],input[type=password],input[type=number],select,textarea{width:100%;padding:13px 16px;border-radius:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.14);color:var(--tx);outline:0;transition:border .25s}
+input:focus,select:focus,textarea:focus{border-color:var(--y)}
+select option{background:#161616;color:#fff}
+input[type=color]{width:56px;height:44px;border:1px solid rgba(255,255,255,.2);border-radius:12px;background:none;cursor:pointer;padding:3px}
+input[type=range]{width:100%;accent-color:var(--y)}
+input[type=file]{color:var(--mut);width:100%}
+.row{display:flex;flex-wrap:wrap;margin:0 -8px}
+.row>*{flex:1 1 220px;margin:0 8px;min-width:0}
+.check{display:flex;align-items:center;gap:10px;margin-top:14px;text-transform:none;letter-spacing:0;font-size:.95rem;color:var(--tx)}
+.check input{width:18px;height:18px;accent-color:var(--y)}
+
+/* Navbar */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:14px 0;transition:all .35s;background:rgba(10,10,10,.94);border-bottom:1px solid rgba(255,255,255,.1)}
+.nav-in{display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;font-weight:800;font-size:1.05rem}
+.logo b{display:block;width:38px;height:38px;line-height:38px;text-align:center;border-radius:11px;background:linear-gradient(135deg,var(--y),var(--y2));color:#0a0a0a;font-size:.95rem;font-family:Georgia,serif;margin-right:10px}
+.logo small{display:block;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--y);font-weight:600;line-height:1}
+.nav-links{display:flex;align-items:center}
+.nav-links li{margin-left:22px}
+.nav-links a,.nav-links button{font-size:.92rem;color:var(--mut);background:none;border:0;cursor:pointer;transition:color .25s;padding:6px 0;border-bottom:2px solid transparent}
+.nav-links a:hover,.nav-links button:hover{color:var(--tx)}
+.nav-links a.on{color:var(--y);border-bottom-color:var(--y)}
+.nav-links .nav-cta{padding:9px 20px;border-radius:50px;background:linear-gradient(135deg,var(--y),var(--y2));color:#0a0a0a;font-weight:700;border:0}
+.navtoggle{display:none}
+.burger{display:none;width:32px;height:24px;position:relative;cursor:pointer;z-index:102}
+.burger span{position:absolute;left:0;width:100%;height:3px;background:#fff;border-radius:2px;transition:all .3s}
+.burger span:nth-child(1){top:2px}.burger span:nth-child(2){top:10px}.burger span:nth-child(3){top:18px}
+.navtoggle:checked~.burger span:nth-child(1){top:10px;transform:rotate(45deg)}
+.navtoggle:checked~.burger span:nth-child(2){opacity:0}
+.navtoggle:checked~.burger span:nth-child(3){top:10px;transform:rotate(-45deg)}
+
+main{padding:104px 0 60px;min-height:calc(100vh - 100px)}
+.sec-head{text-align:center;margin-bottom:34px}
+.sec-head .eyebrow{display:block;font-size:.78rem;letter-spacing:.28em;text-transform:uppercase;color:var(--y);margin-bottom:8px}
+.sec-head h2{font-size:2.1rem;line-height:1.15;font-weight:800}
+.sec-head .bar{display:block;width:64px;height:3px;border-radius:3px;background:var(--y);margin:16px auto 0}
+.panel{display:none}.panel.show{display:block;animation:rise .6s ease both}
+@keyframes rise{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+body.noanim *{animation:none!important;transition:none!important}
+
+/* Cards / stats */
+.cards{display:flex;flex-wrap:wrap;margin:-10px}
+.card{flex:1 1 200px;margin:10px;padding:28px 22px;text-align:center;position:relative;transition:all .4s;min-width:0}
+.card:hover{transform:translateY(-8px);border-color:color-mix(in srgb,var(--y) 45%,transparent);box-shadow:0 24px 55px color-mix(in srgb,var(--y) 12%,transparent)}
+.ico{width:58px;height:58px;margin:0 auto 14px;border-radius:17px;background:linear-gradient(135deg,var(--y),var(--y2));display:flex;align-items:center;justify-content:center;box-shadow:0 12px 28px color-mix(in srgb,var(--y) 28%,transparent)}
+.ico svg{width:27px;height:27px;stroke:#0a0a0a;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.card .num{font-size:2.1rem;font-weight:800;line-height:1.1}
+.card .lbl{color:var(--mut);font-size:.88rem;letter-spacing:.06em}
+.box{padding:28px;margin-top:22px}
+.box h3{font-size:.8rem;letter-spacing:.28em;text-transform:uppercase;color:var(--y);margin-bottom:16px;font-weight:600}
+.split{display:flex;flex-wrap:wrap;margin:0 -11px}
+.split>*{flex:1 1 340px;margin:22px 11px 0;min-width:0}
+.split>.box{margin-top:22px}
+
+/* Chart */
+.chart{display:flex;align-items:flex-end;height:190px;gap:10px;padding-top:10px}
+.chart div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.chart i{display:block;width:100%;max-width:46px;border-radius:10px 10px 4px 4px;background:linear-gradient(180deg,var(--y),var(--y2));min-height:6px;transition:height .8s}
+.chart small{color:var(--mut);font-size:.72rem;margin-top:6px}
+.chart em{font-style:normal;font-size:.72rem;margin-bottom:4px}
+
+/* Lists / tables */
+.list li{display:flex;align-items:center;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.08)}
+.list li:last-child{border:0}
+.list img{width:46px;height:46px;border-radius:12px;object-fit:cover;margin-right:14px;border:1px solid rgba(255,255,255,.14)}
+.list .grow{flex:1;min-width:0}
+.list .grow b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.list .grow small{color:var(--mut)}
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:620px}
+th{text-align:left;font-size:.75rem;letter-spacing:.16em;text-transform:uppercase;color:var(--y);padding:12px 10px;border-bottom:1px solid rgba(255,255,255,.16)}
+td{padding:14px 10px;border-bottom:1px solid rgba(255,255,255,.07);vertical-align:middle}
+.avatar{display:inline-block;width:36px;height:36px;line-height:36px;text-align:center;border-radius:50%;background:linear-gradient(135deg,var(--y),var(--y2));color:#0a0a0a;font-weight:800;margin-right:10px;vertical-align:middle}
+.tag{display:inline-block;padding:5px 14px;border-radius:50px;font-size:.78rem;background:color-mix(in srgb,var(--y) 9%,transparent);border:1px solid color-mix(in srgb,var(--y) 40%,transparent)}
+.tag.off{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.2);color:var(--mut)}
+
+/* Gallery */
+.masonry{display:flex;flex-wrap:wrap;margin:-10px}
+.m-item{position:relative;overflow:hidden;flex:1 1 260px;max-width:100%;margin:10px;border-radius:var(--r);border:1px solid rgba(255,255,255,.12);background:#161616;transition:all .4s}
+.m-item:hover{border-color:color-mix(in srgb,var(--y) 45%,transparent);box-shadow:0 26px 60px color-mix(in srgb,var(--y) 14%,transparent)}
+.m-item img{width:100%;height:210px;object-fit:cover;transition:transform .8s}
+.m-item:hover img{transform:scale(1.06)}
+.m-info{padding:16px 18px}
+.m-info h4{font-size:1.05rem}
+.m-info small{color:var(--y);letter-spacing:.12em;text-transform:uppercase;font-size:.72rem}
+.m-info p{color:var(--mut);font-size:.88rem}
+.m-act{display:flex;gap:8px;margin-top:12px}
+.empty{text-align:center;color:var(--mut);padding:30px}
+
+/* Swatches */
+.sw{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
+.sw button{width:40px;height:40px;border-radius:50%;border:3px solid rgba(255,255,255,.2);cursor:pointer;transition:transform .2s}
+.sw button:hover{transform:scale(1.15);border-color:#fff}
+.preview{padding:22px;margin-top:18px;text-align:center}
+.preview h4{font-size:1.4rem;margin-bottom:6px}
+
+/* Login */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:30px 0}
+.login-box{width:92%;max-width:430px;padding:40px 34px;text-align:center}
+.login-box .logo{justify-content:center;font-size:1.3rem;margin-bottom:6px}
+.login-box h1{font-size:1.7rem;margin:12px 0 4px}
+.login-box p{color:var(--mut);font-size:.92rem}
+.login-box form{text-align:left;margin-top:12px}
+.login-box .btn{width:100%;margin-top:22px}
+.err{color:#ff6b61;font-size:.88rem;min-height:1.3em;margin-top:10px;text-align:center}
+.hint{color:var(--mut);font-size:.8rem;text-align:center;margin-top:16px}
+.hint b{color:var(--y)}
+
+/* Toast */
+#toast{position:fixed;bottom:26px;left:50%;transform:translate(-50%,40px);opacity:0;z-index:500;padding:13px 26px;border-radius:50px;background:#161616;border:1px solid var(--y);color:var(--tx);transition:all .35s;pointer-events:none;max-width:90%;text-align:center}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+
+footer{padding:34px 0;text-align:center;color:#a8a8a8;border-top:1px solid rgba(255,255,255,.1);font-size:.95rem}
+footer b{color:var(--y);font-weight:600}
+
+@media(max-width:860px){
+  .burger{display:block}
+  .nav-links{position:fixed;top:0;right:-100%;height:100vh;width:80%;max-width:310px;flex-direction:column;justify-content:center;background:#0a0a0a;border-left:1px solid rgba(255,255,255,.12);transition:right .45s;z-index:101}
+  .nav-links li{margin:13px 0}
+  .nav-links a,.nav-links button{font-size:1.1rem}
+  .navtoggle:checked~.nav-links{right:0}
+  .sec-head h2{font-size:1.8rem}
+  .box{padding:22px 18px}
+}
+</style>
+</head>
+<body>
+<div class="glow-bg"></div>
+
+<!-- ================= LOGIN ================= -->
+<section id="login" class="login-wrap">
+  <div class="login-box glass">
+    <div class="logo"><b>HR</b><span class="siteName">Haseeb Ur Rehman</span></div>
+    <small class="y" style="letter-spacing:.28em;text-transform:uppercase;font-size:.72rem">Admin Panel</small>
+    <h1>Welcome <span class="grad-text">Back</span></h1>
+    <p>Apne dashboard me login karein</p>
+    <form id="loginForm" autocomplete="off">
+      <label for="lUser">Username</label>
+      <input type="text" id="lUser" value="admin" required>
+      <label for="lPass">Password</label>
+      <input type="password" id="lPass" placeholder="Password likhein" required>
+      <label class="check"><input type="checkbox" id="showPw"> Password dikhayen</label>
+      <label class="check"><input type="checkbox" id="remember"> Mujhe yaad rakhein</label>
+      <div class="err" id="lErr"></div>
+      <button class="btn btn-p" type="submit">Login</button>
+    </form>
+    <div class="hint">Default login: <b>admin</b> / <b>admin123</b><br>Login ke baad Security tab se password badal lein.</div>
+  </div>
+</section>
+
+<!-- ================= APP ================= -->
+<div id="app" class="hide">
+<nav>
+  <div class="container nav-in">
+    <a href="#" class="logo" data-go="dash"><b>HR</b><span><span class="siteName">Haseeb Ur Rehman</span><small>Admin Panel</small></span></a>
+    <input type="checkbox" id="navtoggle" class="navtoggle" aria-label="Menu">
+    <label for="navtoggle" class="burger" aria-label="Open menu"><span></span><span></span><span></span></label>
+    <ul class="nav-links" id="links">
+      <li><a href="#" data-go="dash" class="on">Dashboard</a></li>
+      <li><a href="#" data-go="gallery">Gallery</a></li>
+      <li><a href="#" data-go="users">Users</a></li>
+      <li><a href="#" data-go="content">Name / Price</a></li>
+      <li><a href="#" data-go="design">Design</a></li>
+      <li><a href="#" data-go="security">Security</a></li>
+      <li><button class="nav-cta" id="logoutBtn" type="button">Logout</button></li>
+    </ul>
+  </div>
+</nav>
+
+<main>
+<div class="container">
+
+<!-- DASHBOARD -->
+<div class="panel show" id="p-dash">
+  <div class="sec-head"><span class="eyebrow">Overview</span><h2>Dash<span class="grad-text">board</span></h2><span class="bar"></span></div>
+  <div class="cards">
+    <div class="card glass"><div class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg></div><div class="num" id="stImg">0</div><div class="lbl">Gallery Images</div></div>
+    <div class="card glass"><div class="ico"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg></div><div class="num" id="stUsr">0</div><div class="lbl">Total Users</div></div>
+    <div class="card glass"><div class="ico"><svg viewBox="0 0 24 24"><path d="M22 11.1V12a10 10 0 1 1-5.9-9.1"/><path d="M22 4L12 14l-3-3"/></svg></div><div class="num" id="stAct">0</div><div class="lbl">Active Users</div></div>
+    <div class="card glass"><div class="ico"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div><div class="num" id="stVis">0</div><div class="lbl">Visits (7 din)</div></div>
+    <div class="card glass"><div class="ico"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.7-4 3-9 3s-9-1.3-9-3M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5"/></svg></div><div class="num" id="stSto">0</div><div class="lbl">Storage Used</div></div>
+  </div>
+  <div class="split">
+    <div class="box glass"><h3>Weekly Visits</h3><div class="chart" id="chart"></div></div>
+    <div class="box glass"><h3>Recent Uploads</h3><ul class="list" id="recentImg"></ul></div>
+  </div>
+  <div class="box glass"><h3>Recent Users</h3><ul class="list" id="recentUsr"></ul></div>
+</div>
+
+<!-- GALLERY -->
+<div class="panel" id="p-gallery">
+  <div class="sec-head"><span class="eyebrow">Portfolio</span><h2>Manage <span class="grad-text">Gallery</span></h2><span class="bar"></span></div>
+  <div class="box glass" style="margin-top:0">
+    <h3>Add New Image</h3>
+    <form id="gForm">
+      <div class="row">
+        <div><label>Image</label><input type="file" id="gFile" accept="image/*" required></div>
+        <div><label>Title</label><input type="text" id="gTitle" placeholder="e.g. YouTube Thumbnail" required></div>
+      </div>
+      <div class="row">
+        <div><label>Category</label>
+          <select id="gCat"><option>Thumbnail Designing</option><option>Graphic Designing</option><option>Logo Design</option><option>Photo Editing</option><option>Video Editing</option><option>Portfolio</option></select></div>
+        <div><label>Price (optional)</label><input type="text" id="gPrice" placeholder="e.g. Rs 1500"></div>
+      </div>
+      <button class="btn btn-p" type="submit" style="margin-top:20px">Add Image</button>
+    </form>
+  </div>
+  <div class="box glass"><h3>All Images (<span id="gCount">0</span>)</h3><div class="masonry" id="gGrid"></div></div>
+</div>
+
+<!-- USERS -->
+<div class="panel" id="p-users">
+  <div class="sec-head"><span class="eyebrow">Members</span><h2>Users <span class="grad-text">List</span></h2><span class="bar"></span></div>
+  <div class="box glass" style="margin-top:0">
+    <h3>Add User</h3>
+    <form id="uForm">
+      <div class="row">
+        <div><label>Name</label><input type="text" id="uName" required></div>
+        <div><label>Email</label><input type="email" id="uMail" required></div>
+      </div>
+      <div class="row">
+        <div><label>Role</label><select id="uRole"><option>Client</option><option>Editor</option><option>Admin</option><option>Visitor</option></select></div>
+        <div><label>Status</label><select id="uStat"><option>Active</option><option>Blocked</option></select></div>
+      </div>
+      <button class="btn btn-p" type="submit" style="margin-top:20px">Add User</button>
+    </form>
+  </div>
+  <div class="box glass">
+    <h3>All Users (<span id="uCount">0</span>)</h3>
+    <input type="text" id="uSearch" placeholder="Search name / email / role...">
+    <div class="tbl-wrap" style="margin-top:14px"><table><thead><tr><th>User</th><th>Role</th><th>Joined</th><th>Status</th><th>Action</th></tr></thead><tbody id="uBody"></tbody></table></div>
+  </div>
+</div>
+
+<!-- CONTENT: NAME / PRICE -->
+<div class="panel" id="p-content">
+  <div class="sec-head"><span class="eyebrow">Website Info</span><h2>Name &amp; <span class="grad-text">Price</span></h2><span class="bar"></span></div>
+  <div class="box glass" style="margin-top:0">
+    <h3>Profile</h3>
+    <div class="row">
+      <div><label>Website / Your Name</label><input type="text" id="cName"></div>
+      <div><label>Email</label><input type="email" id="cMail"></div>
+    </div>
+    <div class="row">
+      <div><label>Location</label><input type="text" id="cLoc"></div>
+      <div><label>Currency</label><input type="text" id="cCur" placeholder="Rs / $ / PKR"></div>
+    </div>
+    <label>Tagline</label><textarea id="cTag" rows="3"></textarea>
+  </div>
+  <div class="box glass">
+    <h3>Services &amp; Prices</h3>
+    <div id="svList"></div>
+    <button class="btn btn-g btn-s" id="svAdd" type="button" style="margin-top:14px">+ Add Service</button>
+  </div>
+  <button class="btn btn-p" id="cSave" type="button" style="margin-top:22px">Save Changes</button>
+</div>
+
+<!-- DESIGN -->
+<div class="panel" id="p-design">
+  <div class="sec-head"><span class="eyebrow">Customize</span><h2>Design <span class="grad-text">Options</span></h2><span class="bar"></span></div>
+  <div class="split">
+    <div class="box glass" style="margin-top:0">
+      <h3>Colours</h3>
+      <label>Quick Themes</label>
+      <div class="sw" id="swatches"></div>
+      <div class="row">
+        <div><label>Main Colour</label><input type="color" id="dY"></div>
+        <div><label>Gradient Colour</label><input type="color" id="dY2"></div>
+        <div><label>Background</label><input type="color" id="dBg"></div>
+        <div><label>Text</label><input type="color" id="dTx"></div>
+      </div>
+    </div>
+    <div class="box glass" style="margin-top:0">
+      <h3>Fonts</h3>
+      <label>Font Style</label>
+      <select id="dFont"></select>
+      <label>Custom Google Font (optional)</label>
+      <input type="text" id="dGF" placeholder="e.g. Poppins, Montserrat, Cairo">
+      <small style="color:var(--mut)">Custom font ke liye internet chahiye. Khali chhor dein to upar wala font chalega.</small>
+    </div>
+  </div>
+  <div class="split">
+    <div class="box glass">
+      <h3>Style</h3>
+      <label>Card Roundness: <span id="vR">22</span>px</label>
+      <input type="range" id="dR" min="0" max="40" step="1">
+      <label>Glass Blur: <span id="vB">12</span>px</label>
+      <input type="range" id="dB" min="0" max="30" step="1">
+      <label class="check"><input type="checkbox" id="dGlow"> Background glow</label>
+      <label class="check"><input type="checkbox" id="dAnim"> Animations</label>
+    </div>
+    <div class="box glass">
+      <h3>Live Preview</h3>
+      <div class="preview glass"><div class="ico"><svg viewBox="0 0 24 24"><path d="M12 19l7-7 3 3-7 7z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18z"/></svg></div><h4 class="grad-text">Graphic Designing</h4><p style="color:var(--mut)">Aisa dikhega aapka design</p><br><button class="btn btn-p" type="button">Contact via Email</button></div>
+    </div>
+  </div>
+  <div style="margin-top:22px;display:flex;flex-wrap:wrap;gap:12px">
+    <button class="btn btn-p" id="dSave" type="button">Save Design</button>
+    <button class="btn btn-g" id="dReset" type="button">Reset to Default</button>
+  </div>
+</div>
+
+<!-- SECURITY -->
+<div class="panel" id="p-security">
+  <div class="sec-head"><span class="eyebrow">Account</span><h2><span class="grad-text">Password</span> &amp; Security</h2><span class="bar"></span></div>
+  <div class="split">
+    <div class="box glass" style="margin-top:0">
+      <h3>Change Password</h3>
+      <form id="pwForm" autocomplete="off">
+        <label>Username</label><input type="text" id="sUser">
+        <label>Current Password</label><input type="password" id="sOld" required>
+        <label>New Password (min 6)</label><input type="password" id="sNew" required minlength="6">
+        <label>Confirm New Password</label><input type="password" id="sNew2" required minlength="6">
+        <div class="err" id="sErr"></div>
+        <button class="btn btn-p" type="submit" style="margin-top:12px">Update Password</button>
+      </form>
+    </div>
+    <div class="box glass" style="margin-top:0">
+      <h3>Backup &amp; Data</h3>
+      <p style="color:var(--mut)">Saara data (gallery, users, design, prices) aapke browser me save hota hai. Backup zaroor rakhein.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:18px">
+        <button class="btn btn-p btn-s" id="exBtn" type="button">Export Backup</button>
+        <label class="btn btn-g btn-s" style="margin:0;text-transform:none;letter-spacing:0;font-size:.85rem;color:var(--tx)">Import Backup<input type="file" id="imFile" accept=".json" class="hide"></label>
+        <button class="btn btn-d" id="wipeBtn" type="button">Delete All Data</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+</main>
+
+<footer><div class="container">&copy; 2026 <b class="siteName">Haseeb Ur Rehman</b> &bull; Admin Panel</div></footer>
+</div>
+
+<div id="toast"></div>
+
+<script>
+(function(){
+"use strict";
+function $(id){return document.getElementById(id)}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+
+/* ---------- storage ---------- */
+var KEY='hr_admin_data_v1',PWK='hr_admin_auth_v1',SESS='hr_admin_session_v1';
+var FONTS=[
+ ['System (Default)','-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif'],
+ ['Georgia (Serif)','Georgia,"Times New Roman",serif'],
+ ['Trebuchet','"Trebuchet MS",Helvetica,sans-serif'],
+ ['Verdana','Verdana,Geneva,sans-serif'],
+ ['Palatino','"Palatino Linotype",Palatino,serif'],
+ ['Impact (Bold)','Impact,Haettenschweiler,"Arial Narrow Bold",sans-serif'],
+ ['Courier (Mono)','"Courier New",Courier,monospace'],
+ ['Comic Style','"Comic Sans MS","Comic Sans",cursive']
+];
+var THEMES=[['#FFD60A','#FFB703'],['#00E5FF','#2979FF'],['#FF4D6D','#FF8FA3'],['#39FF14','#00C853'],['#B388FF','#7C4DFF'],['#FF9100','#FF3D00'],['#FFFFFF','#BDBDBD']];
+function defaults(){
+ return {
+  gallery:[],
+  users:[
+   {id:1,name:'Ali Khan',email:'ali@example.com',role:'Client',status:'Active',date:'2026-09-02'},
+   {id:2,name:'Sara Ahmed',email:'sara@example.com',role:'Client',status:'Active',date:'2026-09-14'},
+   {id:3,name:'Usman Editor',email:'usman@example.com',role:'Editor',status:'Active',date:'2026-09-28'},
+   {id:4,name:'Test Visitor',email:'visitor@example.com',role:'Visitor',status:'Blocked',date:'2026-10-05'}
+  ],
+  design:{y:'#FFD60A',y2:'#FFB703',bg:'#0a0a0a',tx:'#ffffff',font:0,gf:'',r:22,blur:12,glow:true,anim:true},
+  content:{name:'Haseeb Ur Rehman',email:'urehmanhaseeb53@gmail.com',loc:'KPK, Pakistan',cur:'Rs',
+   tag:'My name is Haseeb, Alhamdulillah I can do Graphic Designing, Video Editing, Thumbnail Designing, Photo Editing, I can make Portfolios',
+   services:[{n:'Graphic Designing',p:'1500'},{n:'Video Editing',p:'3000'},{n:'Thumbnail Designing',p:'500'},{n:'Photo Editing',p:'300'},{n:'Portfolio Making',p:'5000'}]},
+  visits:[38,52,47,66,59,81,74]
+ };
+}
+var D;
+function load(){
+ try{var raw=localStorage.getItem(KEY);D=raw?JSON.parse(raw):defaults()}catch(e){D=defaults()}
+ var df=defaults();
+ for(var k in df){if(D[k]===undefined)D[k]=df[k]}
+ for(var k2 in df.design){if(D.design[k2]===undefined)D.design[k2]=df.design[k2]}
+ for(var k3 in df.content){if(D.content[k3]===undefined)D.content[k3]=df.content[k3]}
+}
+function save(){
+ try{localStorage.setItem(KEY,JSON.stringify(D));return true}
+ catch(e){toast('Storage full! Pehle kuch images delete karein.');return false}
+}
+function toast(m){var t=$('toast');t.textContent=m;t.className='show';clearTimeout(toast.t);toast.t=setTimeout(function(){t.className=''},2600)}
+
+/* ---------- password (front-end only) ---------- */
+function hash(s){var h1=0xdeadbeef,h2=0x41c6ce57;for(var i=0,c;i<s.length;i++){c=s.charCodeAt(i);h1=Math.imul(h1^c,2654435761);h2=Math.imul(h2^c,1597334677)}
+ h1=Math.imul(h1^(h1>>>16),2246822507)^Math.imul(h2^(h2>>>13),3266489909);
+ h2=Math.imul(h2^(h2>>>16),2246822507)^Math.imul(h1^(h1>>>13),3266489909);
+ return (4294967296*(2097151&h2)+(h1>>>0)).toString(36)}
+function getAuth(){try{var a=JSON.parse(localStorage.getItem(PWK));if(a&&a.u&&a.h)return a}catch(e){}
+ var d={u:'admin',h:hash('admin123')};localStorage.setItem(PWK,JSON.stringify(d));return d}
+function setAuth(a){localStorage.setItem(PWK,JSON.stringify(a))}
+
+/* ---------- login ---------- */
+var tries=0,lockUntil=0;
+function showApp(){$('login').className='hide';$('app').className='';render()}
+function showLogin(){$('app').className='hide';$('login').className='login-wrap';$('lPass').value=''}
+$('showPw').addEventListener('change',function(){$('lPass').type=this.checked?'text':'password'});
+$('loginForm').addEventListener('submit',function(e){
+ e.preventDefault();
+ if(Date.now()<lockUntil){$('lErr').textContent='Bohat ghalat koshishen. '+Math.ceil((lockUntil-Date.now())/1000)+' second baad try karein.';return}
+ var a=getAuth();
+ if($('lUser').value.trim()===a.u&&hash($('lPass').value)===a.h){
+  tries=0;$('lErr').textContent='';
+  try{($('remember').checked?localStorage:sessionStorage).setItem(SESS,'1')}catch(x){}
+  showApp();toast('Login successful. Welcome!');
+ }else{
+  tries++;$('lErr').textContent='Username ya password ghalat hai.';
+  if(tries>=5){lockUntil=Date.now()+30000;tries=0;$('lErr').textContent='5 ghalat koshishen. 30 second wait karein.'}
+ }
+});
+$('logoutBtn').addEventListener('click',function(){
+ try{sessionStorage.removeItem(SESS);localStorage.removeItem(SESS)}catch(x){}
+ $('navtoggle').checked=false;showLogin();
+});
+
+/* ---------- navigation ---------- */
+var links=document.querySelectorAll('[data-go]');
+function go(id){
+ var ps=document.querySelectorAll('.panel');
+ for(var i=0;i<ps.length;i++)ps[i].className='panel'+(ps[i].id==='p-'+id?' show':'');
+ var navs=document.querySelectorAll('.nav-links a');
+ for(var j=0;j<navs.length;j++)navs[j].className=navs[j].getAttribute('data-go')===id?'on':'';
+ $('navtoggle').checked=false;
+ window.scrollTo(0,0);
+ if(id==='dash')renderDash();
+}
+for(var i=0;i<links.length;i++){links[i].addEventListener('click',function(e){e.preventDefault();go(this.getAttribute('data-go'))})}
+
+/* ---------- apply design ---------- */
+function applyDesign(){
+ var d=D.design,root=document.documentElement.style;
+ root.setProperty('--y',d.y);root.setProperty('--y2',d.y2);root.setProperty('--bg',d.bg);root.setProperty('--tx',d.tx);
+ root.setProperty('--r',d.r+'px');root.setProperty('--blur',d.blur+'px');
+ var f=FONTS[d.font]?FONTS[d.font][1]:FONTS[0][1];
+ if(d.gf){
+  var name=d.gf.replace(/[^A-Za-z0-9 ]/g,'').trim();
+  if(name){
+   var l=$('gfLink');if(!l){l=document.createElement('link');l.id='gfLink';l.rel='stylesheet';document.head.appendChild(l)}
+   l.href='https://fonts.googleapis.com/css2?family='+encodeURIComponent(name).replace(/%20/g,'+')+'&display=swap';
+   f='"'+name+'",'+f;
+  }
+ }else{var o=$('gfLink');if(o)o.parentNode.removeChild(o)}
+ root.setProperty('--font',f);
+ document.body.className=(d.glow?'':'noglow ')+(d.anim?'':'noanim');
+ var nm=document.querySelectorAll('.siteName');
+ for(var i=0;i<nm.length;i++)nm[i].textContent=D.content.name;
+}
+
+/* ---------- dashboard ---------- */
+function bytes(n){return n>1048576?(n/1048576).toFixed(2)+' MB':Math.round(n/1024)+' KB'}
+function renderDash(){
+ $('stImg').textContent=D.gallery.length;
+ $('stUsr').textContent=D.users.length;
+ var act=0;D.users.forEach(function(u){if(u.status==='Active')act++});
+ $('stAct').textContent=act;
+ var tot=0;D.visits.forEach(function(v){tot+=v});$('stVis').textContent=tot;
+ var sz=0;try{sz=(localStorage.getItem(KEY)||'').length}catch(e){}
+ $('stSto').textContent=bytes(sz);
+ var days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],mx=Math.max.apply(null,D.visits.concat([1])),h='';
+ D.visits.forEach(function(v,i){h+='<div><em>'+v+'</em><i style="height:'+Math.max(4,Math.round(v/mx*140))+'px"></i><small>'+days[i]+'</small></div>'});
+ $('chart').innerHTML=h;
+ var ri='';D.gallery.slice(-4).reverse().forEach(function(g){ri+='<li><img src="'+g.src+'" alt=""><div class="grow"><b>'+esc(g.title)+'</b><small>'+esc(g.cat)+'</small></div></li>'});
+ $('recentImg').innerHTML=ri||'<li class="empty" style="display:block">Abhi koi image nahi.</li>';
+ var ru='';D.users.slice(-4).reverse().forEach(function(u){ru+='<li><span class="avatar">'+esc(u.name.charAt(0).toUpperCase())+'</span><div class="grow"><b>'+esc(u.name)+'</b><small>'+esc(u.email)+'</small></div><span class="tag'+(u.status==='Active'?'':' off')+'">'+esc(u.status)+'</span></li>'});
+ $('recentUsr').innerHTML=ru||'<li class="empty" style="display:block">Koi user nahi.</li>';
+}
+
+/* ---------- gallery ---------- */
+function renderGallery(){
+ $('gCount').textContent=D.gallery.length;
+ var h='';
+ D.gallery.forEach(function(g){
+  h+='<div class="m-item"><img src="'+g.src+'" alt="'+esc(g.title)+'"><div class="m-info"><h4>'+esc(g.title)+'</h4><small>'+esc(g.cat)+'</small>'+(g.price?'<p>'+esc(g.price)+'</p>':'')+'<div class="m-act"><button class="btn btn-g btn-s" data-edit="'+g.id+'" type="button">Edit</button><button class="btn btn-d" data-del="'+g.id+'" type="button">Delete</button></div></div></div>';
+ });
+ $('gGrid').innerHTML=h||'<div class="empty" style="width:100%">Gallery khali hai. Upar se image add karein.</div>';
+}
+function shrink(file,cb){
+ var fr=new FileReader();
+ fr.onload=function(){
+  var im=new Image();
+  im.onload=function(){
+   var max=900,w=im.width,h=im.height;
+   if(w>max||h>max){if(w>h){h=Math.round(h*max/w);w=max}else{w=Math.round(w*max/h);h=max}}
+   var c=document.createElement('canvas');c.width=w;c.height=h;
+   c.getContext('2d').drawImage(im,0,0,w,h);
+   cb(c.toDataURL('image/jpeg',0.8));
+  };
+  im.onerror=function(){toast('Image read nahi ho saki.')};
+  im.src=fr.result;
+ };
+ fr.readAsDataURL(file);
+}
+$('gForm').addEventListener('submit',function(e){
+ e.preventDefault();
+ var f=$('gFile').files[0];if(!f)return;
+ shrink(f,function(src){
+  D.gallery.push({id:Date.now(),src:src,title:$('gTitle').value.trim(),cat:$('gCat').value,price:$('gPrice').value.trim()});
+  if(save()){$('gForm').reset();renderGallery();toast('Image add ho gayi.')}else{D.gallery.pop()}
+ });
+});
+$('gGrid').addEventListener('click',function(e){
+ var d=e.target.getAttribute('data-del'),ed=e.target.getAttribute('data-edit');
+ if(d){if(confirm('Is image ko delete karein?')){D.gallery=D.gallery.filter(function(g){return String(g.id)!==d});save();renderGallery();toast('Image delete ho gayi.')}}
+ if(ed){
+  var g=D.gallery.filter(function(x){return String(x.id)===ed})[0];if(!g)return;
+  var t=prompt('Title:',g.title);if(t===null)return;
+  var p=prompt('Price:',g.price||'');if(p===null)return;
+  g.title=t.trim()||g.title;g.price=p.trim();save();renderGallery();toast('Update ho gaya.');
+ }
+});
+
+/* ---------- users ---------- */
+function renderUsers(){
+ var q=$('uSearch').value.toLowerCase(),h='',n=0;
+ D.users.forEach(function(u){
+  if(q&&(u.name+' '+u.email+' '+u.role).toLowerCase().indexOf(q)<0)return;
+  n++;
+  h+='<tr><td><span class="avatar">'+esc(u.name.charAt(0).toUpperCase())+'</span>'+esc(u.name)+'<br><small style="color:var(--mut);margin-left:46px">'+esc(u.email)+'</small></td><td>'+esc(u.role)+'</td><td>'+esc(u.date)+'</td><td><span class="tag'+(u.status==='Active'?'':' off')+'">'+esc(u.status)+'</span></td><td><button class="btn btn-g btn-s" data-tg="'+u.id+'" type="button">'+(u.status==='Active'?'Block':'Activate')+'</button> <button class="btn btn-d" data-ud="'+u.id+'" type="button">Delete</button></td></tr>';
+ });
+ $('uBody').innerHTML=h||'<tr><td colspan="5" class="empty">Koi user nahi mila.</td></tr>';
+ $('uCount').textContent=D.users.length;
+}
+$('uSearch').addEventListener('input',renderUsers);
+$('uForm').addEventListener('submit',function(e){
+ e.preventDefault();
+ D.users.push({id:Date.now(),name:$('uName').value.trim(),email:$('uMail').value.trim(),role:$('uRole').value,status:$('uStat').value,date:new Date().toISOString().slice(0,10)});
+ save();$('uForm').reset();renderUsers();toast('User add ho gaya.');
+});
+$('uBody').addEventListener('click',function(e){
+ var tg=e.target.getAttribute('data-tg'),ud=e.target.getAttribute('data-ud');
+ if(tg){D.users.forEach(function(u){if(String(u.id)===tg)u.status=u.status==='Active'?'Blocked':'Active'});save();renderUsers()}
+ if(ud&&confirm('Is user ko delete karein?')){D.users=D.users.filter(function(u){return String(u.id)!==ud});save();renderUsers();toast('User delete ho gaya.')}
+});
+
+/* ---------- content: name / price ---------- */
+function renderContent(){
+ var c=D.content;
+ $('cName').value=c.name;$('cMail').value=c.email;$('cLoc').value=c.loc;$('cCur').value=c.cur;$('cTag').value=c.tag;
+ var h='';
+ c.services.forEach(function(s,i){
+  h+='<div class="row" style="align-items:flex-end"><div><label>Service</label><input type="text" data-sn="'+i+'" value="'+esc(s.n)+'"></div><div><label>Price</label><input type="text" data-sp="'+i+'" value="'+esc(s.p)+'"></div><div style="flex:0 0 auto"><button class="btn btn-d" data-sd="'+i+'" type="button">Delete</button></div></div>';
+ });
+ $('svList').innerHTML=h||'<div class="empty">Koi service nahi.</div>';
+}
+function readServices(){
+ var ns=document.querySelectorAll('[data-sn]'),ps=document.querySelectorAll('[data-sp]'),out=[];
+ for(var i=0;i<ns.length;i++)out.push({n:ns[i].value.trim(),p:ps[i].value.trim()});
+ return out;
+}
+$('svAdd').addEventListener('click',function(){D.content.services=readServices();D.content.services.push({n:'New Service',p:'0'});renderContent()});
+$('svList').addEventListener('click',function(e){
+ var d=e.target.getAttribute('data-sd');
+ if(d!==null){D.content.services=readServices();D.content.services.splice(+d,1);renderContent()}
+});
+$('cSave').addEventListener('click',function(){
+ var c=D.content;
+ c.name=$('cName').value.trim()||c.name;c.email=$('cMail').value.trim();c.loc=$('cLoc').value.trim();c.cur=$('cCur').value.trim();c.tag=$('cTag').value.trim();
+ c.services=readServices().filter(function(s){return s.n});
+ if(save()){applyDesign();renderContent();toast('Name/Price save ho gaye.')}
+});
+
+/* ---------- design ---------- */
+function fillDesign(){
+ var d=D.design;
+ $('dY').value=d.y;$('dY2').value=d.y2;$('dBg').value=d.bg;$('dTx').value=d.tx;
+ $('dFont').value=d.font;$('dGF').value=d.gf;
+ $('dR').value=d.r;$('vR').textContent=d.r;$('dB').value=d.blur;$('vB').textContent=d.blur;
+ $('dGlow').checked=d.glow;$('dAnim').checked=d.anim;
+}
+function liveDesign(){
+ var d=D.design;
+ d.y=$('dY').value;d.y2=$('dY2').value;d.bg=$('dBg').value;d.tx=$('dTx').value;
+ d.font=+$('dFont').value;d.gf=$('dGF').value.trim();
+ d.r=+$('dR').value;d.blur=+$('dB').value;d.glow=$('dGlow').checked;d.anim=$('dAnim').checked;
+ $('vR').textContent=d.r;$('vB').textContent=d.blur;
+ applyDesign();
+}
+(function(){
+ var h='';FONTS.forEach(function(f,i){h+='<option value="'+i+'">'+f[0]+'</option>'});$('dFont').innerHTML=h;
+ var s='';THEMES.forEach(function(t,i){s+='<button type="button" data-th="'+i+'" style="background:linear-gradient(135deg,'+t[0]+','+t[1]+')" aria-label="Theme '+(i+1)+'"></button>'});$('swatches').innerHTML=s;
+ $('swatches').addEventListener('click',function(e){
+  var t=e.target.getAttribute('data-th');if(t===null)return;
+  $('dY').value=THEMES[t][0];$('dY2').value=THEMES[t][1];liveDesign();
+ });
+ ['dY','dY2','dBg','dTx','dFont','dR','dB','dGlow','dAnim'].forEach(function(id){$(id).addEventListener('input',liveDesign);$(id).addEventListener('change',liveDesign)});
+ $('dGF').addEventListener('change',liveDesign);
+})();
+$('dSave').addEventListener('click',function(){liveDesign();if(save())toast('Design save ho gaya.')});
+$('dReset').addEventListener('click',function(){if(confirm('Design default par wapis karein?')){D.design=defaults().design;save();fillDesign();applyDesign();toast('Default design wapis aa gaya.')}});
+
+/* ---------- security ---------- */
+$('pwForm').addEventListener('submit',function(e){
+ e.preventDefault();
+ var a=getAuth(),err=$('sErr');err.textContent='';
+ if(hash($('sOld').value)!==a.h){err.textContent='Current password ghalat hai.';return}
+ if($('sNew').value.length<6){err.textContent='Naya password kam az kam 6 characters ka ho.';return}
+ if($('sNew').value!==$('sNew2').value){err.textContent='Naya password match nahi karta.';return}
+ var u=$('sUser').value.trim()||a.u;
+ setAuth({u:u,h:hash($('sNew').value)});
+ $('pwForm').reset();$('sUser').value=u;toast('Password update ho gaya.');
+});
+$('exBtn').addEventListener('click',function(){
+ var b=new Blob([JSON.stringify(D)],{type:'application/json'}),a=document.createElement('a');
+ a.href=URL.createObjectURL(b);a.download='admin-backup-'+new Date().toISOString().slice(0,10)+'.json';
+ document.body.appendChild(a);a.click();document.body.removeChild(a);toast('Backup download ho raha hai.');
+});
+$('imFile').addEventListener('change',function(){
+ var f=this.files[0];if(!f)return;
+ var r=new FileReader();
+ r.onload=function(){try{var o=JSON.parse(r.result);if(!o.gallery||!o.users)throw 0;D=o;load2();save();render();toast('Backup import ho gaya.')}catch(x){toast('Ye valid backup file nahi hai.')}};
+ r.readAsText(f);this.value='';
+});
+function load2(){var df=defaults();for(var k in df){if(D[k]===undefined)D[k]=df[k]}}
+$('wipeBtn').addEventListener('click',function(){
+ if(confirm('Saara data delete ho jayega. Pakka?')){D=defaults();save();render();toast('Saara data reset ho gaya.')}
+});
+
+/* ---------- render all ---------- */
+function render(){
+ applyDesign();renderDash();renderGallery();renderUsers();renderContent();fillDesign();
+ $('sUser').value=getAuth().u;
+}
+
+/* ---------- init ---------- */
+load();getAuth();applyDesign();
+var logged=false;try{logged=sessionStorage.getItem(SESS)==='1'||localStorage.getItem(SESS)==='1'}catch(e){}
+if(logged)showApp();
+})();
+</script>
+</body>
+</html>
